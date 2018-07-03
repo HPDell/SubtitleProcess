@@ -7,7 +7,7 @@ abstract class Subtitle {
      * 加载字幕文件
      * @param filename 文件名
      */
-    abstract load(filename: string);
+    abstract parse(filename: string);
 
     /**
      * 保存字幕文件。
