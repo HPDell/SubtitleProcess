@@ -22,6 +22,15 @@
             "outFiles": [
                 "${workspaceFolder}/bin/**/*.js"
             ]
+        },{
+            "type": "node",
+            "request": "launch",
+            "name": "Test: Find Font",
+            "program": "${workspaceFolder}\\bin\\test\\test-find-fonts.js",
+            "preLaunchTask": "tsc: build - tsconfig.json",
+            "outFiles": [
+                "${workspaceFolder}/bin/**/*.js"
+            ]
         }
     ]
 }
