@@ -1,7 +1,7 @@
 class ScriptInfo {
     
     /** 注释 */
-    Comments?: string[];
+    Comments?: string[] = [];
 
     /** 标题, 如果没有提供, 则自动使用<untitled> */
     Title?: string = "<untitled>";

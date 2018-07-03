@@ -10,27 +10,29 @@ class DialogueText {
 
     /**
      * 解析对话内容
-     * @param dialog 对话内容
+     * @param dialogue 对话内容
      */
-    parse(dialog: string): DialogueText {
-        const matchRegEpr = /{\\\S+}/;
-        if (matchRegEpr.test(dialog)) {
-            let effects = matchRegEpr.exec(dialog);
-            let texts = dialog.split(matchRegEpr);
+    parse(dialogue: string): DialogueText {
+        const matchRegEpr = /{\\\S+}/g;
+        if (matchRegEpr.test(dialogue)) {
+            let effects = dialogue.match(matchRegEpr);
+            let texts = dialogue.split(matchRegEpr).filter((value) => {
+                return value != "";
+            });
             let lastIndex = 0;
             let textIndex = 0;
-            if (dialog.indexOf(effects[0]) > 0) {
+            if (dialogue.indexOf(effects[0]) > 0) {
                 this.contents.push(new TextELement(texts[textIndex]));
                 textIndex++;
                 lastIndex += texts[0].length;
             }
             for (const effectCode of effects) {
-                let index = dialog.indexOf(effectCode);
-                if (index === lastIndex) {
+                let index = dialogue.indexOf(effectCode);
+                if (lastIndex === index) {
                     this.contents.push(new EffectElement(effectCode));
                     lastIndex += effectCode.length;
                 } else {
-                    while (textIndex < texts.length && lastIndex >= index) {
+                    while (textIndex < texts.length && lastIndex < index) {
                         this.contents.push(new TextELement(texts[textIndex]));
                         lastIndex += texts[textIndex].length;
                         textIndex++;
@@ -39,8 +41,12 @@ class DialogueText {
                     lastIndex += effectCode.length;
                 }
             }
+            while (textIndex < texts.length) {
+                this.contents.push(new TextELement(texts[textIndex]));
+                textIndex++;
+            }
         } else {
-            this.contents.push(new TextELement(dialog));
+            this.contents.push(new TextELement(dialogue));
         }
         return this;
     }
@@ -108,7 +114,7 @@ export class EffectElement extends DialogTextElement {
     constructor(effect: string) {
         super();
         this.content = [];
-        if (effect.search(/{\\\S+?}/) > 1) {
+        if (effect.search(/{\\\S*?}/) > 1) {
             this.content = this.content.concat(/{\\\S+?}/.exec(effect));
         } else {
             this.content.push(effect);

@@ -29,7 +29,7 @@ class Dialogue {
      * @param dialog 对话行
      */
     parse(dialog: string): Dialogue {
-        let items = dialog.split(",", 10);
+        let items = dialog.split(",");
         this.Layer = parseInt(items[0]);
         this.Start = items[1];
         this.End = items[2];
@@ -39,7 +39,7 @@ class Dialogue {
         this.MarginR = parseFloat(items[6]);
         this.MarginV = parseFloat(items[7]);
         this.Effect = items[8];
-        this.Text = DialogueText.load(items[9]);
+        this.Text = DialogueText.load(items.slice(9).join(","));
         return this;
     }
 

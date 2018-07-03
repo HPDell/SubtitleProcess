@@ -25,10 +25,12 @@ class AssSubtitle extends Subtitle {
     parse(filename: string): AssSubtitle {
         let reader = new readline(filename);
         let line = "";
-        while (line = reader.next().trim()) {
+        while (line = reader.next()) {
+            line = line.toString().trim();
             switch (line) {
                 case "[Script Info]":
-                    while ((line = reader.next().trim())) {
+                    while ((line = reader.next())) {
+                        line = line.toString().trim();
                         if (line == "" || line == "[V4+ Styles]" || line == "[Events]") {
                             break;
                         } else {
@@ -38,7 +40,8 @@ class AssSubtitle extends Subtitle {
                     break;
                 case "[V4+ Styles]":
                     reader.next();
-                    while (line = reader.next().trim()) {
+                    while (line = reader.next()) {
+                        line = line.toString().trim();
                         if (line == "" || line == "[Script Info]" || line == "[Events]") {
                             break;
                         } else {
@@ -48,7 +51,8 @@ class AssSubtitle extends Subtitle {
                     break;
                 case "[Events]":
                     reader.next();
-                    while (line = reader.next().trim()) {
+                    while (line = reader.next()) {
+                        line = line.toString().trim();
                         if (line == "" || line == "[Script Info]" || line == "[V4+ Styles]") {
                             break;
                         } else {
