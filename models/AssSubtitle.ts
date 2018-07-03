@@ -3,8 +3,9 @@ import ScriptInfo from "./ASS/ScriptInfo";
 import V4StylesDict from "./ASS/V4StylesDict";
 import Events from "./ASS/Events";
 import readline = require("n-readlines");
+import { EffectElement } from "./ASS/EventModels/DialogTextElements/EffectElement";
 
-class AssSubtitle extends Subtitle {
+class AssSubtitle implements Subtitle {
 
     /** [Script Info] 标签 */
     scriptInfo: ScriptInfo;
@@ -16,7 +17,6 @@ class AssSubtitle extends Subtitle {
     events: Events;
 
     constructor(scriptInfo?: ScriptInfo, v4Styles?: V4StylesDict, events?: Events) {
-        super();
         this.scriptInfo = scriptInfo ? scriptInfo : new ScriptInfo();
         this.v4Styles = v4Styles ? v4Styles : new V4StylesDict();
         this.events = events ? events : new Events();
@@ -69,6 +69,23 @@ class AssSubtitle extends Subtitle {
 
     save(filename?: string) {
         throw new Error("Method not implemented.");
+    }
+
+    findFont(): Set<string> {
+        let fontSet = new Set<string>();
+        this.v4Styles.styles.forEach(v4Style => {
+            fontSet.add(v4Style.Fontname);
+        });
+        for (const dialogue of this.events.lines) {
+            for (const text of dialogue.Text.contents) {
+                if (text instanceof EffectElement) {
+                    (text as EffectElement).findFont().forEach(font => {
+                        fontSet.add(font);
+                    });
+                }
+            }
+        }
+        return fontSet;
     }
 }
 
