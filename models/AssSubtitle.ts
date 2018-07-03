@@ -87,6 +87,25 @@ class AssSubtitle implements Subtitle {
         }
         return fontSet;
     }
+
+    replaceFont(fontMap: Map<string, string>) {
+        this.v4Styles.styles.forEach(style => {
+            if (style.Fontname in fontMap.keys()) {
+                style.Fontname = fontMap[style.Fontname];
+            }
+        });
+        for (const dialogue of this.events.lines) {
+            for (const text of dialogue.Text.contents) {
+                if (text instanceof EffectElement) {
+                    for (const item of text.content) {
+                        if (item.name == "fn" && item.value in fontMap.keys()) {
+                            item.value = fontMap[item.value];
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 export default AssSubtitle;
