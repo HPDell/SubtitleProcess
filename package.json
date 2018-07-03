@@ -1,0 +1,17 @@
+{
+  "name": "subtitleprocess",
+  "version": "0.0.1",
+  "description": "Process ASS subtitle.",
+  "main": "bin/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Hu Yigong",
+  "license": "ISC",
+  "dependencies": {
+    "n-readlines": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^10.5.1"
+  }
+}

@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "outDir": "bin",
+        "lib": [
+            "es6"
+        ],
+        "sourceMap": false
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}
