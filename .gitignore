@@ -77,3 +77,7 @@ typings/
 
 
 # End of https://www.gitignore.io/api/node
+
+# Custom
+bin/*
+!bin/.gitkeep
