@@ -4,7 +4,7 @@
 abstract class Subtitle {
 
     /**
-     * 加载字幕文件
+     * 解析字幕文件
      * @param filename 文件名
      */
     abstract parse(filename: string);
