@@ -7,4 +7,4 @@ function testAssModel(ass: string) {
     fs.writeFileSync("../testass.json", JSON.stringify(assSubtitle));
 }
 
-testAssModel("C:\\Users\\HuYG0\\Documents\\Temp\\test-data\\test.ass");
+testAssModel("test/data/test.ass");

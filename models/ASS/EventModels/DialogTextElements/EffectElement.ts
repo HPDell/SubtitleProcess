@@ -30,24 +30,103 @@ export class EffectElement extends DialogTextElement {
     }
 
     splitEffectCode(item: string): EffectCode[] {
-        return item.substring(1, item.length - 1).split("\\").filter(value => {
-            return value != "";
-        }).map(code => {
-            let reg = /^[0-9]?[a-z]+/;
-            if (reg.test(code)) {
-                let name = code.match(reg)[0];
-                let value = code.substring(name.length);
-                return {
-                    name: name,
-                    value: value
+        let effectCodeList = [];
+        let effect: EffectCode | null = null;
+        let flagReadEffect = false;
+        let flagReadValue = false;
+        let flagValueArray = false;
+        let leftParenthesisNum = 0;
+        let temp = "";
+        for (let i = 0; i < item.length; i++) {
+            let char = item[i];
+            if (char == "\\") {
+                if (flagReadEffect == true) {
+                    if (flagReadValue == true && flagValueArray == true) {
+                        let subEffects = this.splitEffectCode(item.slice(i));
+                        if (subEffects.length > 0) {
+                            let firstSubEffect = subEffects[0]
+                            effect.pushValue(firstSubEffect);
+                            let firstSubEffectLength = firstSubEffect.toString().length;
+                            i += firstSubEffectLength - 1;
+                        }
+                    } else {
+                        if (effect) {
+                            effect.pushValue(temp);
+                            temp = "";
+                            effectCodeList.push(effect);
+                            flagReadValue = false;
+                        }
+                        flagReadEffect = false;
+                        i--;
+                    }
+                } else {
+                    effect = new EffectCode();
+                    flagReadEffect = true;
                 }
+            } else if (char == "(") {
+                if (!flagReadValue) {
+                    flagReadValue = true;
+                    if (!flagValueArray) {
+                        flagValueArray = true;
+                        if (effect) {
+                            effect.name = temp;
+                            temp = "";
+                        }
+                    } 
+                    leftParenthesisNum++;
+                } else {
+                    if (flagValueArray) {
+                        temp += char;
+                    }
+                }
+            } else if (char == ")") {
+                if (flagReadValue && flagValueArray) {
+                    if (leftParenthesisNum > 1) {
+                        leftParenthesisNum --;
+                    } else if (leftParenthesisNum == 1) {
+                        effect.pushValue(temp);
+                        flagValueArray = false;
+                        temp = "";
+                        leftParenthesisNum --;
+                    }
+                } else {
+                    flagReadEffect = false;
+                    effectCodeList.push(effect);
+                    effect = new EffectCode();
+                    return effectCodeList;
+                }
+            } else if (/[0-9&]/.test(char)) {
+                if (item[i - 1] == "\\") {
+                    temp += char;
+                } else {
+                    if (flagReadValue) {
+                        temp += char;
+                    } else {
+                        if (effect) {
+                            effect.name = temp;
+                            temp = "";
+                        }
+                        flagReadValue = true;
+                        temp += char;
+                    }
+                }
+            } else if (char == ",") {
+                if (flagReadEffect && flagReadValue) {
+                    effect.pushValue(temp)
+                    temp = "";
+                } else {
+                    return effectCodeList;
+                }
+            } else if (char == "{") {
+                continue;
+            } else if (char == "}") {
+                effectCodeList.push(effect);
+                break;
             } else {
-                return {
-                    name: code,
-                    value: ""
-                }
+                temp += char;
             }
-        })
+        }
+        return effectCodeList;
     }
 
     /**
@@ -57,12 +136,60 @@ export class EffectElement extends DialogTextElement {
         return new Set<string>(this.content.filter(item => {
             return item.name == "fn";
         }).map(item => {
-            return item.value;
+            return item.value.toString();
         }))
     }
 }
 
 class EffectCode {
     name: string;
-    value: string;
+    value: Array<number | string | EffectCode>;
+
+    constructor() {
+        this.name = "";
+        this.value = [];
+    }
+
+    toString() : string {
+        let code = `\\${this.name}`;
+        let values = this.value.map(value => value.toString()).join(",");
+        if (this.value.length > 1) {
+            return `${code}(${values})`;
+        } else {
+            return `${code}${values}`
+        }
+    }
+
+    pushValue(value: string | number | EffectCode) {
+        if (value == "") {
+            return;
+        }
+        if (typeof value == "string") {
+            if (/^[0-9]+$/.test(value.toString())) {
+                this.value.push(parseInt(value.toString()));
+            } else {
+                this.value.push(value);
+            }
+        } else {
+            this.value.push(value);
+        }
+    }
+
+    setValue (value: string) {
+        let valueItemList = value.split(",");
+        for (let i = 0; i < valueItemList.length; i++) {
+            const item = valueItemList[i];
+            if (/^\\\S\(/.test(item)) {
+                let closeItem = valueItemList.slice(i).findIndex((item) => {
+                    return /\)/.test(item);
+                });
+            } else {
+                if (/^[0-9]+$/.test(item)) {
+                    this.value.push(parseInt(item));
+                } else {
+                    this.value.push(item);
+                }
+            }
+        }
+    }
 }
