@@ -95,7 +95,7 @@ export class EffectElement extends DialogTextElement {
                     effect = new EffectCode();
                     return effectCodeList;
                 }
-            } else if (/[0-9&]/.test(char)) {
+            } else if (/[0-9&\u4e00-\u9fa5]/.test(char)) {
                 if (item[i - 1] == "\\") {
                     temp += char;
                 } else {
@@ -120,6 +120,10 @@ export class EffectElement extends DialogTextElement {
             } else if (char == "{") {
                 continue;
             } else if (char == "}") {
+                if (temp != "") {
+                    effect.value.push(temp);
+                    temp = "";
+                }
                 effectCodeList.push(effect);
                 break;
             } else {
@@ -128,20 +132,9 @@ export class EffectElement extends DialogTextElement {
         }
         return effectCodeList;
     }
-
-    /**
-     * 找到特效代码中所用到的字体
-     */
-    findFont(): Set<string> {
-        return new Set<string>(this.content.filter(item => {
-            return item.name == "fn";
-        }).map(item => {
-            return item.value.toString();
-        }))
-    }
 }
 
-class EffectCode {
+export class EffectCode {
     name: string;
     value: Array<number | string | EffectCode>;
 
