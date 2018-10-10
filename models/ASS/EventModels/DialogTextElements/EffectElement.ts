@@ -168,21 +168,7 @@ export class EffectCode {
         }
     }
 
-    setValue (value: string) {
-        let valueItemList = value.split(",");
-        for (let i = 0; i < valueItemList.length; i++) {
-            const item = valueItemList[i];
-            if (/^\\\S\(/.test(item)) {
-                let closeItem = valueItemList.slice(i).findIndex((item) => {
-                    return /\)/.test(item);
-                });
-            } else {
-                if (/^[0-9]+$/.test(item)) {
-                    this.value.push(parseInt(item));
-                } else {
-                    this.value.push(item);
-                }
-            }
-        }
+    setValue (value: Array<number | string | EffectCode>) {
+        this.value = value;
     }
 }

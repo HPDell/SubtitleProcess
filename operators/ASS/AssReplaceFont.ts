@@ -38,8 +38,8 @@ function effectFindFont(effectElement: EffectElement): Set<string> {
 
 export function replaceFont(subtitle: AssSubtitle, fontMap: Map<string, string>) {
     subtitle.v4Styles.styles.forEach(style => {
-        if (style.Fontname in fontMap.keys()) {
-            style.Fontname = fontMap[style.Fontname];
+        if (fontMap.has(style.Fontname)) {
+            style.Fontname = fontMap.get(style.Fontname);
         }
     });
     for (const dialogue of subtitle.events.lines) {
@@ -51,19 +51,15 @@ export function replaceFont(subtitle: AssSubtitle, fontMap: Map<string, string>)
             }
         }
     }
+    return subtitle;
 }
 
 function effectCodeReplaceFont(effectCode: EffectCode, fontMap: Map<string, string>) {
     if (effectCode.name == "fn") {
-        if (effectCode.value) {
-            effectCode.value = effectCode.value.map(value => {
-                if (value instanceof EffectCode) {
-                    return effectCodeReplaceFont(value, fontMap);
-                } else {
-                    return fontMap[value];
-                }
-            })
+        if (effectCode.value && effectCode.value.length > 0) {
+            if (fontMap.has((effectCode.value[0] as string))) {
+                effectCode.value[0] = fontMap.get((effectCode.value[0] as string));
+            }
         }
     }
-    return effectCode;
 }
