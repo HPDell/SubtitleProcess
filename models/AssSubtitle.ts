@@ -98,9 +98,9 @@ class AssSubtitle implements Subtitle {
             for (const text of dialogue.Text.contents) {
                 if (text instanceof EffectElement) {
                     for (const item of text.content) {
-                        if (item.name == "fn" && item.value in fontMap.keys()) {
-                            item.value = fontMap[item.value];
-                        }
+                        // if (item.name == "fn" && item.value in fontMap.keys()) {
+                        //     item.value = fontMap[item.value];
+                        // }
                     }
                 }
             }
